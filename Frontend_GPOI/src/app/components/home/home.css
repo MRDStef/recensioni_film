@@ -1,0 +1,30 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.home-container {
+    display: flex;
+    justify-content: center;
+
+    height: 100vh;
+    background-image: url('https://stanzedicinema.com/wp-content/uploads/2026/03/screenshot-2026-01-22-at-4.webp?w=1088');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter:brightness(0.75);
+    
+}
+
+.text-container {
+    background: rgba(18, 20, 30, 0.75);
+    backdrop-filter: blur(12px);
+    width: 75%;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top:60px;
+    padding: 2rem;
+
+}
