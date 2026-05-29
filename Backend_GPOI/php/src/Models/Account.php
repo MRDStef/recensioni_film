@@ -22,28 +22,28 @@ class Account
         return $result ?: null;
     }
 
-    public function create(string $username, string $email, string $passwordHash): bool
+    public function create(string $nome_utente, string $email, string $password): bool
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO account (username, email, password_hash) VALUES (?, ?, ?)"
+            "INSERT INTO account (nome_utente, email, password) VALUES (?, ?, ?)"
         );
-        $stmt->bind_param("sss", $username, $email, $passwordHash);
+        $stmt->bind_param("sss", $nome_utente, $email, $password);
         return $stmt->execute();
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id_account): ?array
     {
-        $stmt = $this->db->prepare("SELECT id, username, email, ruolo, created_at FROM account WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        $stmt = $this->db->prepare("SELECT * FROM account WHERE id_account = ?");
+        $stmt->bind_param("i", $id_account);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         return $result ?: null;
     }
 
-    public function updatePassword(int $id, string $passwordHash): bool
+    public function updatePassword(int $id_account, string $password): bool
     {
-        $stmt = $this->db->prepare("UPDATE account SET password_hash = ? WHERE id = ?");
-        $stmt->bind_param("si", $passwordHash, $id);
+        $stmt = $this->db->prepare("UPDATE account SET password = ? WHERE id_account = ?");
+        $stmt->bind_param("si", $password, $id_account);
         return $stmt->execute();
     }
 }

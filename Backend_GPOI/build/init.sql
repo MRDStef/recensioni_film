@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Recensione (
     id_film BIGINT NOT NULL,
     id_account BIGINT NOT NULL,
     valutazione INT NOT NULL CHECK (valutazione >= 1 AND valutazione <= 5),
-    descrizione descrizione TEXT(255),
+    descrizione TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_film) REFERENCES Film(id_film),

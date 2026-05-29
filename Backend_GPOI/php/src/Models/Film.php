@@ -21,35 +21,35 @@ class Film
 
     public function findById(int $id): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM film WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM film WHERE id_film = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         return $result ?: null;
     }
 
-    public function create(string $titolo, string $regista, int $anno, string $genere, string $descrizione, string $locandina_url): bool
+    public function create(string $titolo, string $genere, string $regista, int $data_pubblicazione, string $locandina_url, string $descrizione): bool
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO film (titolo, regista, anno, genere, descrizione, locandina_url) VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO film (titolo, genere, regista, data_pubblicazione, locandina_url, descrizione) VALUES (?, ?, ?, ?, ?, ?)"
         );
-        $stmt->bind_param("ssisss", $titolo, $regista, $anno, $genere, $descrizione, $locandina_url);
+        $stmt->bind_param("ssssss", $titolo, $regista, $data_pubblicazione, $genere, $descrizione, $locandina_url);
         return $stmt->execute();
     }
 
-    public function update(int $id, string $titolo, string $regista, int $anno, string $genere, string $descrizione, string $locandina_url): bool
+    public function update(int $id_film, string $titolo, string $genere, string $regista, int $data_pubblicazione, string $locandina_url, string $descrizione): bool
     {
         $stmt = $this->db->prepare(
-            "UPDATE film SET titolo=?, regista=?, anno=?, genere=?, descrizione=?, locandina_url=? WHERE id=?"
+            "UPDATE film SET titolo=?, genere=?, regista=?, data_pubblicazione=?, locandina_url=?, descrizione=? WHERE id_film=?"
         );
-        $stmt->bind_param("ssisssi", $titolo, $regista, $anno, $genere, $descrizione, $locandina_url, $id);
+        $stmt->bind_param("ssssssi", $titolo, $genere, $regista, $data_pubblicazione, $locandina_url, $descrizione, $id_film);
         return $stmt->execute();
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id_film): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM film WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        $stmt = $this->db->prepare("DELETE FROM film WHERE id_film = ?");
+        $stmt->bind_param("i", $id_film);
         return $stmt->execute();
     }
 }
