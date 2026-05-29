@@ -1,59 +1,62 @@
 <?php
 
-namespace RecensioniFilm\Models;
+namespace App\Models;
 
-use RecensioniFilm\Config\Database;
+use PDO;
 
-class Recensione
-{
-    private $db;
+class RecensioneModel {
+    private PDO $db;
 
-    public function __construct()
-    {
-        $this->db = Database::getConnection();
+    public function __construct(PDO $db) {
+        $this->db = $db;
     }
 
-    public function findByFilm(int $id_film): array
-    {
-        $stmt = $this->db->prepare("
-            SELECT r.*, a.nome_utente 
-            FROM recensione r
-            JOIN account a ON r.id_account = a.id_account
+    public function getAll(): array {
+        $stmt = $this->db->query('
+            SELECT r.*, a.nome_utente, f.titolo AS titolo_film
+            FROM Recensione r
+            JOIN Account a ON r.id_account = a.id_account
+            JOIN Film f    ON r.id_film    = f.id_film
+            ORDER BY r.created_at DESC
+        ');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getByFilm(int $id_film): array {
+        $stmt = $this->db->prepare('
+            SELECT r.*, a.nome_utente
+            FROM Recensione r
+            JOIN Account a ON r.id_account = a.id_account
             WHERE r.id_film = ?
             ORDER BY r.created_at DESC
-        ");
-        $stmt->bind_param("i", $id_film);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        ');
+        $stmt->execute([$id_film]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findByAccount(int $id_account): array
-    {
-        $stmt = $this->db->prepare("
-            SELECT r.*, f.titolo AS film_titolo
-            FROM recensione r
-            JOIN film f ON r.id_film = f.id_film
+    public function getByAccount(int $id_account): array {
+        $stmt = $this->db->prepare('
+            SELECT r.*, f.titolo AS titolo_film
+            FROM Recensione r
+            JOIN Film f ON r.id_film = f.id_film
             WHERE r.id_account = ?
             ORDER BY r.created_at DESC
-        ");
-        $stmt->bind_param("i", $id_account);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        ');
+        $stmt->execute([$id_account]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create(int $id_account, int $id_film, string $descrizione, int $valutazione): bool
-    {
-        $stmt = $this->db->prepare(
-            "INSERT INTO recensione (id_account, id_film, descrizione, valutazione) VALUES (?, ?, ?, ?)"
-        );
-        $stmt->bind_param("iisi", $id_account, $id_film, $descrizione, $valutazione);
-        return $stmt->execute();
+    public function add(int $id_film, int $id_account, int $valutazione, string $descrizione): int {
+        $stmt = $this->db->prepare('
+            INSERT INTO Recensione (id_film, id_account, valutazione, descrizione)
+            VALUES (?, ?, ?, ?)
+        ');
+        $stmt->execute([$id_film, $id_account, $valutazione, $descrizione]);
+        return (int)$this->db->lastInsertId();
     }
 
-    public function delete(int $id_recensione): bool
-    {
-        $stmt = $this->db->prepare("DELETE FROM recensione WHERE id_recensione = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
+    public function delete(int $id): void {
+        $stmt = $this->db->prepare('DELETE FROM Recensione WHERE id_recensione = ?');
+        $stmt->execute([$id]);
     }
 }

@@ -1,55 +1,50 @@
 <?php
 
-namespace RecensioniFilm\Models;
+namespace App\Models;
 
-use RecensioniFilm\Config\Database;
+use PDO;
 
-class Film
-{
-    private $db;
+class FilmModel {
+    private PDO $db;
 
-    public function __construct()
-    {
-        $this->db = Database::getConnection();
+    public function __construct(PDO $db) {
+        $this->db = $db;
     }
 
-    public function findAll(): array
-    {
-        $result = $this->db->query("SELECT * FROM film");
-        return $result->fetch_all(MYSQLI_ASSOC);
+    public function getAll(): array {
+        $stmt = $this->db->query('
+            SELECT * FROM Film ORDER BY data_pubblicazione DESC
+        ');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findById(int $id): ?array
-    {
-        $stmt = $this->db->prepare("SELECT * FROM film WHERE id_film = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        return $result ?: null;
+    public function getById(int $id): array|false {
+        $stmt = $this->db->prepare('
+            SELECT * FROM Film WHERE id_film = ?
+        ');
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create(string $titolo, string $genere, string $regista, int $data_pubblicazione, string $locandina_url, string $descrizione): bool
-    {
-        $stmt = $this->db->prepare(
-            "INSERT INTO film (titolo, genere, regista, data_pubblicazione, locandina_url, descrizione) VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        $stmt->bind_param("ssssss", $titolo, $regista, $data_pubblicazione, $genere, $descrizione, $locandina_url);
-        return $stmt->execute();
+    public function add(string $titolo, string $genere, string $regista, string $data, ?string $locandina): int {
+        $stmt = $this->db->prepare('
+            INSERT INTO Film (titolo, genere, regista, data_pubblicazione, locandina_path)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$titolo, $genere, $regista, $data, $locandina]);
+        return (int)$this->db->lastInsertId();
     }
 
-    public function update(int $id_film, string $titolo, string $genere, string $regista, int $data_pubblicazione, string $locandina_url, string $descrizione): bool
-    {
-        $stmt = $this->db->prepare(
-            "UPDATE film SET titolo=?, genere=?, regista=?, data_pubblicazione=?, locandina_url=?, descrizione=? WHERE id_film=?"
-        );
-        $stmt->bind_param("ssssssi", $titolo, $genere, $regista, $data_pubblicazione, $locandina_url, $descrizione, $id_film);
-        return $stmt->execute();
+    public function update(int $id, string $titolo, string $genere, string $regista, string $data): void {
+        $stmt = $this->db->prepare('
+            UPDATE Film SET titolo=?, genere=?, regista=?, data_pubblicazione=?
+            WHERE id_film = ?
+        ');
+        $stmt->execute([$titolo, $genere, $regista, $data, $id]);
     }
 
-    public function delete(int $id_film): bool
-    {
-        $stmt = $this->db->prepare("DELETE FROM film WHERE id_film = ?");
-        $stmt->bind_param("i", $id_film);
-        return $stmt->execute();
+    public function delete(int $id): void {
+        $stmt = $this->db->prepare('DELETE FROM Film WHERE id_film = ?');
+        $stmt->execute([$id]);
     }
 }

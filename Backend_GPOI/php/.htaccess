@@ -1,5 +1,7 @@
-RewriteEngine on  
-RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+RedirectMatch 403 ^/vendor/.*$
+RedirectMatch 403 ^/src/.*$
+RedirectMatch 403 ^/uploads/.*$
