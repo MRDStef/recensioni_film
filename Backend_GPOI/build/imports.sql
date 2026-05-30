@@ -1,35 +1,8 @@
-INSERT INTO Account (nome_utente, email, ruolo) VALUES
-('marco_piva', 'marco.piva@email.it', 'utente'),
-('sofia_regia', 'sofia.r@email.com', 'utente'),
-('luca_blocks', 'luca.b@email.net', 'utente'),
-('elena_cinefila', 'elena.c@email.it', 'utente'),
-('giovanni_reviews', 'giò.rev@email.com', 'utente'),
-('admin_cine', 'admin.moderatore@recensionifilm.com', 'moderatore');
+INSERT INTO `account` (`id_account`, `nome_utente`, `email`, `ruolo`, `password`, `avatar_url`, `created_at`) VALUES
+(4, 'admin', 'admin@test.it', 'admin', 'admin123', NULL, '2026-05-30 15:06:00');
 
-INSERT INTO Film (titolo, genere, regista, data_pubblicazione) VALUES
-('Inception', 'Fantascienza', 'Christopher Nolan', '2010-09-24'),
-('Il Padrino', 'Drammatico', 'Francis Ford Coppola', '1972-09-21'),
-('Pulp Fiction', 'Crime', 'Quentin Tarantino', '1994-10-28'),
-('Interstellar', 'Fantascienza', 'Christopher Nolan', '2014-11-06'),
-('La Vita è Bella', 'Drammatico', 'Roberto Benigni', '1997-12-20');
-
-INSERT INTO Recensione (id_film, id_account, valutazione, descrizione) VALUES
--- Recensioni per Inception (Film 1)
-(1, 1, 5, 'Un capolavoro assoluto, trama complessa e cast eccezionale.'),
-(1, 3, 4, 'Molto bello, ma a tratti un po troppo confusionario.'),
-
--- Recensioni per Il Padrino (Film 2)
-(2, 2, 5, 'La storia del cinema. Pietra miliare intramontabile.'),
-(2, 4, 5, 'Marlon Brando monumentale. Film perfetto.'),
-
--- Recensioni per Pulp Fiction (Film 3)
-(3, 1, 4, 'Dialoghi fantastici e regia iconica. Tipico stile Tarantino.'),
-(3, 5, 5, 'Il mio film preferito in assoluto!'),
-
--- Recensioni per Interstellar (Film 4)
-(4, 3, 5, 'Colonna sonora da brividi e risvolti scientifici affascinanti.'),
-(4, 2, 3, 'Visivamente spettacolare, ma la parte finale non mi ha convinto del tutto.'),
-
--- Recensioni per La Vita è Bella (Film 5)
-(5, 4, 5, 'Poetico, commovente e storicamente potentissimo. Capolavoro di Benigni.'),
-(5, 5, 4, 'Fa ridere e piangere allo stesso tempo. Da vedere assolutamente.');
+INSERT INTO `film` (`id_film`, `titolo`, `genere`, `regista`, `data_pubblicazione`, `locandina_url`, `descrizione`) VALUES
+(25, 'Inception', 'Fantascienza', 'Christopher Nolan', '2010-09-24', 'uploads/locandine/locandine_6a1aedc5e9f832.56698675.jpg', 'La tua mente è la scena del crimine. Dom Cobb è un ladro professionista specializzato nell\'estrarre segreti preziosi dal profondo del subconscio durante lo stato di sogno. Questa sua rara abilità lo ha reso un rifugiato internazionale, costandogli tutto ciò che ama. Ora gli viene offerta una possibilità di riscatto: per riavere la sua vita, non dovrà rubare un\'idea, ma impiantarla. Questa volta il colpo perfetto non si chiama estrazione, ma Inception.'),
+(26, 'Interstellar', 'Fantascienza', 'Christopher Nolan', '2014-11-06', 'uploads/locandine/locandine_6a1aee40e669e2.92591412.jpg', 'La fine della Terra non sarà la nostra fine. In un futuro vicino, i cambiamenti climatici e una piaga globale stanno distruggendo l\'agricoltura, condannando l\'umanità all\'estinzione. Cooper (Matthew McConaughey), un ex pilota della NASA diventato agricoltore, viene reclutato per una missione segreta disperata. Insieme a un team di scienziati, dovrà attraversare un misterioso wormhole (un ponte spaziotemporale) scoperto vicino a Saturno, per viaggiare oltre i confini della nostra galassia e trovare un nuovo pianeta abitabile dove trasferire la specie umana.'),
+(27, 'Shrek', 'Animazione', 'Andrew Adamson, Vicky Jenson', '2001-07-15', 'uploads/locandine/locandine_6a1aeef042d973.65208877.jpg', 'C\'era una volta un orco verde e solitario di nome Shrek, la cui amata e tranquilla palude viene improvvisamente invasa da fastidiose creature delle fiabe, bandite dal malvagio Lord Farquaad. Per riavere la sua casa, Shrek stringe un patto con il tiranno: dovrà salvare la bellissima Principessa Fiona, prigioniera in una torre sorvegliata da un drago sputafuoco. Accompagnato da Ciuchino, un mulo parlante logorroico e fin troppo ottimista, Shrek intraprenderà un viaggio che ribalterà per sempre tutte le regole delle favole tradizionali.'),
+(28, 'Shrek 2', 'Animazione', 'Andrew Adamson', '2004-12-17', 'uploads/locandine/locandine_6a1aef9e398446.89072004.jpg', 'Il \"vissero felici e contenti\" non è mai stato così lontano. Di ritorno dal loro viaggio di nozze, Shrek e la Principessa Fiona vengono invitati nel regno di Molto Molto Lontano per celebrare il matrimonio con i genitori di lei. C\'è solo un piccolo problema: il Re e la Regina non sanno che sia la figlia che il genero sono due enormi orchi verdi. Mentre il suocero complotta per eliminare l\'orco, Shrek si ritrova a dover combattere contro una perfida Fata Madrina, un vanitoso Principe Azzurro e un famigerato cacciatore di taglie: il Gatto con gli Stivali.');

@@ -1,0 +1,50 @@
+<div class="admin-container">
+    <h1 class="titolo-pagina">Dashboard Admin</h1>
+
+    @if (successMessage) {
+    <p class="success">{{ successMessage }}</p>
+    }
+    @if (errore) {
+    <p class="errore">{{ errore }}</p>
+    }
+
+    <!-- FORM AGGIUNGI FILM -->
+    <section class="card">
+        <h2 class="section-title">Aggiungi Film</h2>
+        <form>
+            <div class="form-group">
+                <label>Titolo *</label>
+                <input type="text" [(ngModel)]="nuovoFilm.titolo" name="titolo" placeholder="Inception" />
+            </div>
+
+            <div class="form-group">
+                <label>Genere *</label>
+                <input type="text" [(ngModel)]="nuovoFilm.genere" name="genere" placeholder="Fantascienza" />
+            </div>
+
+            <div class="form-group">
+                <label>Regista</label>
+                <input type="text" [(ngModel)]="nuovoFilm.regista" name="regista" placeholder="Christopher Nolan" />
+            </div>
+
+            <div class="form-group">
+                <label>Descrizione</label>
+                <textarea [(ngModel)]="nuovoFilm.descrizione" name="descrizione" placeholder="Descrizione del film..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Data pubblicazione *</label>
+                <input type="date" [(ngModel)]="nuovoFilm.data_pubblicazione" name="data_pubblicazione" />
+            </div>
+
+            <div class="form-group">
+                <label>Locandina</label>
+                <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onLocandinaChange($event)" />
+            </div>
+
+            <button type="button" class="btn-primary" [disabled]="invioInCorso" (click)="aggiungiFilm()">
+                {{ invioInCorso ? 'Aggiunta in corso...' : 'Aggiungi Film' }}
+            </button>
+        </form>
+    </section>
+</div>

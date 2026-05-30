@@ -1,0 +1,39 @@
+<div class="recensioni-container">
+  <h2 class="titolo-pagina">Tutte le Recensioni</h2>
+
+  @if (caricamento) {
+    <p class="status">Caricamento recensioni...</p>
+  } @else if (errore) {
+    <p class="status errore">{{ errore }}</p>
+  } @else if (recensioni.length === 0) {
+    <p class="status">Nessuna recensione ancora presente.</p>
+  } @else {
+    <div class="recensioni-list">
+      @for (r of recensioni; track r.id_recensione) {
+        <div class="recensione-card" (click)="goToFilm(r.id_film)">
+          <div class="recensione-header">
+            <div class="recensione-info">
+              <span class="film-titolo">{{ r.titolo_film }}</span>
+              <span class="utente">di {{ r.nome_utente }}</span>
+            </div>
+            <div class="recensione-meta">
+              <span class="stelle">{{ renderStelle(r.valutazione) }}</span>
+              <span class="data">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <p class="recensione-testo">{{ r.descrizione }}</p>
+
+          @if (authService.isAdmin()) {
+            <button
+              class="btn-elimina"
+              (click)="$event.stopPropagation(); eliminaRecensione(r.id_recensione)"
+            >
+              Elimina
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

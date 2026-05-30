@@ -40,6 +40,8 @@ class FilmController {
         $genere             = trim($data['genere'] ?? '');
         $regista            = trim($data['regista'] ?? '');
         $data_pubblicazione = trim($data['data_pubblicazione'] ?? '');
+        $descrizione        = trim($data['descrizione'] ?? '');
+        
 
         if (!$titolo || !$genere || !$data_pubblicazione) {
             $response->getBody()->write(json_encode(['error' => 'Campi obbligatori mancanti']));
@@ -52,7 +54,7 @@ class FilmController {
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
-        $id = $this->filmModel->add($titolo, $genere, $regista, $data_pubblicazione, $locandina_path);
+        $id = $this->filmModel->add($titolo, $genere, $regista, $data_pubblicazione, $locandina_path, $descrizione);
 
         $response->getBody()->write(json_encode(['message' => 'Film aggiunto', 'id' => $id]));
         return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
@@ -66,13 +68,14 @@ class FilmController {
         $genere             = trim($data['genere'] ?? '');
         $regista            = trim($data['regista'] ?? '');
         $data_pubblicazione = trim($data['data_pubblicazione'] ?? '');
+        $descrizione        = trim($data['descrizione'] ?? '');
 
         if (!$titolo || !$genere || !$data_pubblicazione) {
             $response->getBody()->write(json_encode(['error' => 'Campi obbligatori mancanti']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
-        $this->filmModel->update((int)$args['id'], $titolo, $genere, $regista, $data_pubblicazione);
+        $this->filmModel->update((int)$args['id'], $titolo, $genere, $regista, $data_pubblicazione, $descrizione);
 
         $response->getBody()->write(json_encode(['message' => 'Film aggiornato']));
         return $response->withHeader('Content-Type', 'application/json');
@@ -104,7 +107,7 @@ class FilmController {
         if ($file->getSize() > 2 * 1024 * 1024) return false;
 
         $filename  = uniqid($cartella . '_', true) . '.' . $ext;
-        $uploadDir = __DIR__ . '/../../uploads/' . $cartella . '/';
+        $uploadDir = __DIR__ . '/../../public/uploads/' . $cartella . '/';
 
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 

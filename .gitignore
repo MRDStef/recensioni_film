@@ -1,2 +1,4 @@
 Frontend_GPOI/node_modules/
 Backend_GPOI/vendor/
+Backend_GPOI/uploads/
+Backend_GPOI/.env

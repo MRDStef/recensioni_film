@@ -1,70 +1,53 @@
-<!-- HEADER DI NAVIGAZIONE -->
 <header class="header">
   <div class="nav-container">
-    <!-- Logo / Nome sito a sinistra -->
+
     <div class="logo">
-      <a href="/">Progetto Recensioni</a>
+      <a routerLink="/home">Progetto Recensioni</a>
     </div>
 
-    <!-- Menu di navigazione al centro -->
-    <ul class="nav-menu">
-      <li><a href="/">Home</a></li>
-      <li><a href="/films">Film</a></li>
-      <li><a href="/series">Serie TV</a></li>
-      <li><a href="/top-rated">Top Rated</a></li>
-      <li><a href="/reviews">Recensioni</a></li>
+    <ul class="nav-menu" [class.active]="mobileMenuAperto">
+      @if (authService.isAdmin()) {
+        <li><a routerLink="/admin" (click)="mobileMenuAperto = false">Dashboard Admin</a></li>
+      }
+      <li><a routerLink="/home" (click)="mobileMenuAperto = false">Home</a></li>
+      <li><a routerLink="/recensioni" (click)="mobileMenuAperto = false">Recensioni</a></li>
+
     </ul>
 
-    <!-- Area account a destra -->
     <div class="account-area">
-      <div class="account-dropdown">
-        <div class="dropdown-trigger">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>Account</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-        <div class="dropdown-menu">
-          <a href="/profile">Il mio profilo</a>
-          <a href="/my-reviews">Le mie recensioni</a>
-          <a href="/watchlist">Watchlist</a>
-          <a href="/logout">Logout</a>
-        </div>
-      </div>
 
-      <!-- Icona avatar cliccabile (alternativa) -->
-      <div class="account-icon" onclick="window.location.href='/profile'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-      </div>
+      @if (authService.isLoggedIn()) {
+        <div class="account-dropdown">
+          <div class="dropdown-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>{{ authService.getNomeUtente() }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+          <div class="dropdown-menu">
+            <a routerLink="/profilo">Il mio profilo</a>
+            <a routerLink="/recensioni">Le mie recensioni</a>
+            <a (click)="logout()">Logout</a>
+          </div>
+        </div>
+
+      } @else {
+        <div class="account-area">
+          <a routerLink="/login" class="btn-login">Accedi</a>
+        </div>
+      }
+
     </div>
 
-    <!-- Hamburger menu per mobile -->
-    <button class="mobile-toggle" onclick="toggleMobileMenu()">
+    <button class="mobile-toggle" (click)="toggleMobileMenu()">
       <span></span>
       <span></span>
       <span></span>
     </button>
+
   </div>
 </header>
-
-<!-- JavaScript per il menu mobile -->
-<script>
-function toggleMobileMenu() {
-  const navMenu = document.querySelector('.nav-menu');
-  navMenu.classList.toggle('active');
-}
-
-// Chiudi menu mobile cliccando su un link
-document.querySelectorAll('.nav-menu a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('.nav-menu').classList.remove('active');
-  });
-});
-</script>

@@ -151,6 +151,13 @@ form button:first-of-type {
   margin-top: 0.8rem;
 }
 
+.errore {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
 /* RESPONSIVE - mantiene il centraggio anche su mobile */
 @media (max-width: 480px) {
   body {

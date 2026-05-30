@@ -213,6 +213,22 @@
   transition: all 0.3s ease;
 }
 
+.btn-login {
+  color: #ffd966;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid rgba(255, 217, 102, 0.4);
+  border-radius: 2rem;
+  transition: all 0.2s ease;
+}
+
+.btn-login:hover {
+  background: rgba(255, 217, 102, 0.1);
+  border-color: #ffd966;
+}
+
 /* RESPONSIVE HEADER */
 @media (max-width: 768px) {
   .header {

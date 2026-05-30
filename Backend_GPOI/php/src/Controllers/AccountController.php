@@ -97,7 +97,8 @@ class AccountController
         }
 
         $filename = uniqid('avatar_', true) . '.' . $ext;
-        $uploadDir = __DIR__ . '/../../uploads/avatars/';
+        $uploadDir = __DIR__ . '/../../public/uploads/avatars/';
+
         if (!is_dir($uploadDir))
             mkdir($uploadDir, 0755, true);
 
