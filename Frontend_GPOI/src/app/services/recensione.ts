@@ -19,7 +19,7 @@ export class Recensione {
   }
 
   getAll(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/recensioni`);
+      return this.http.get<any[]>(`${this.apiUrl}/recensioni`);
   }
 
   getByFilm(idFilm: number): Observable<any[]> {

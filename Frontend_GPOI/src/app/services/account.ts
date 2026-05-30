@@ -32,8 +32,10 @@ export class Account {
   }
 
   updateAvatar(formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/me/avatar`, formData, {
-      headers: this.authHeaders()
+    return this.http.post(`${this.apiUrl}/me/avatar`, formData, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      })
     });
   }
 }

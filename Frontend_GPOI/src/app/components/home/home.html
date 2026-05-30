@@ -1,54 +1,54 @@
 <div class="home-container">
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-inner">
-      @if (featured(); as film) {
-        <div class="hero-text">
-          <span class="hero-label">In evidenza</span>
-          <h1 id="hero-title">{{ film.titolo }}</h1>
-          <p class="hero-description">{{ film.descrizione }}</p>
-        </div>
+      @if (caricamento) {
+      <p class="home-status" role="status">Caricamento film in evidenza...</p>
+      } @else if (featured) {
+      <div class="hero-text">
+        <span class="hero-label">In evidenza</span>
+        <h1 id="hero-title">{{ featured.titolo }}</h1>
+        <p class="hero-description">{{ featured.descrizione }}</p>
+      </div>
 
-        <div class="hero-carousel" role="region" aria-label="Carousel film in evidenza">
-          <button type="button" class="carousel-arrow carousel-arrow--prev" aria-label="Slide precedente">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
+      <div class="hero-carousel" role="region" aria-label="Carousel film in evidenza">
+        <button type="button" class="carousel-arrow carousel-arrow--prev" (click)="precedente()"
+          aria-label="Slide precedente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
 
-          <div class="carousel-viewport">
-            <div class="carousel-track">
-              @for (slide of film.locandine; track slide.id) {
-                <div
-                  class="carousel-slide"
-                  [class.carousel-slide--active]="$first"
-                  [attr.aria-hidden]="!$first"
-                >
-                  @if (slide.url) {
-                    <img
-                      class="carousel-slide-image"
-                      [src]="slide.url"
-                      [alt]="slide.alt ?? film.titolo"
-                    />
-                  } @else {
-                    <div class="carousel-slide-placeholder">
-                      <span class="placeholder-icon" aria-hidden="true">🎬</span>
-                      <span class="placeholder-text">{{ film.titolo }}</span>
-                    </div>
-                  }
-                </div>
+        <div class="carousel-viewport" (click)="goToFilm(featured.id)" style="cursor:pointer">
+          <div class="carousel-track">
+            <div class="carousel-slide carousel-slide--active">
+              @if (featured.url) {
+              <img class="carousel-slide-image" [src]="featured.url" [alt]="featured.titolo" />
+              } @else {
+              <div class="carousel-slide-placeholder">
+                <span class="placeholder-icon" aria-hidden="true">🎬</span>
+                <span class="placeholder-text">{{ featured.titolo }}</span>
+              </div>
               }
             </div>
           </div>
-
-          <button type="button" class="carousel-arrow carousel-arrow--next" aria-label="Slide successiva">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
         </div>
 
-      } @else {
-        <p class="home-status" role="status">Caricamento film in evidenza...</p>
+        <button type="button" class="carousel-arrow carousel-arrow--next" (click)="prossima()"
+          aria-label="Slide successiva">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="carousel-dots">
+          @for (f of tuttiIFilm; track f.id_film) {
+          <button type="button" class="carousel-dot"
+            [class.carousel-dot--active]="tuttiIFilm.indexOf(f) === slideCorrente"
+            (click)="slideCorrente = tuttiIFilm.indexOf(f); aggiornaCorrente(); cdr.detectChanges()"></button>
+          }
+        </div>
+      </div>
       }
     </div>
   </section>
@@ -56,40 +56,37 @@
   <section class="categories" aria-labelledby="categories-heading">
     <h2 id="categories-heading" class="visually-hidden">Categorie film</h2>
 
-    @if (categories().length > 0) {
-      @for (category of categories(); track category.name) {
-        <div class="category-row">
-          <h3 class="category-title">{{ category.name }}</h3>
+    @if (!caricamento && categories.length > 0) {
+    @for (category of categories; track category.name) {
+    <div class="category-row">
+      <h3 class="category-title">{{ category.name }}</h3>
 
-          @if (category.movies.length > 0) {
-            <div class="movie-scroll" role="list" [attr.aria-label]="'Film ' + category.name">
-              @for (movie of category.movies; track movie.id) {
-                <article class="movie-card" role="listitem" (click)="goToFilm(movie.id)" style="cursor:pointer">
-                  @if (movie.posterUrl) {
-                    <img
-                      class="movie-card-poster movie-card-poster--image"
-                      [src]="movie.posterUrl"
-                      [alt]="'Locandina ' + movie.title"
-                    />
-                  } @else {
-                    <div class="movie-card-poster" aria-hidden="true">
-                      <span class="poster-icon">🎞️</span>
-                    </div>
-                  }
-                  <div class="movie-card-info">
-                    <h4 class="movie-card-title">{{ movie.title }}</h4>
-                    <span class="movie-card-year">{{ movie.year }}</span>
-                  </div>
-                </article>
-              }
-            </div>
+      @if (category.movies.length > 0) {
+      <div class="movie-scroll" role="list" [attr.aria-label]="'Film ' + category.name">
+        @for (movie of category.movies; track movie.id) {
+        <article class="movie-card" role="listitem" (click)="goToFilm(movie.id)" style="cursor:pointer">
+          @if (movie.posterUrl) {
+          <img class="movie-card-poster movie-card-poster--image" [src]="movie.posterUrl"
+            [alt]="'Locandina ' + movie.title" />
           } @else {
-            <p class="home-status">Nessun film disponibile per {{ category.name }}.</p>
+          <div class="movie-card-poster" aria-hidden="true">
+            <span class="poster-icon">🎞️</span>
+          </div>
           }
-        </div>
+          <div class="movie-card-info">
+            <h4 class="movie-card-title">{{ movie.title }}</h4>
+            <span class="movie-card-year">{{ movie.year }}</span>
+          </div>
+        </article>
+        }
+      </div>
+      } @else {
+      <p class="home-status">Nessun film disponibile per {{ category.name }}.</p>
       }
-    } @else {
-      <p class="home-status" role="status">Caricamento categorie...</p>
+    </div>
+    }
+    } @else if (!caricamento) {
+    <p class="home-status">Nessun film disponibile.</p>
     }
   </section>
 </div>

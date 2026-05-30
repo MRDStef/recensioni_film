@@ -1,114 +1,4 @@
-// import { HttpClient, provideHttpClient, withFetch } from '@angular/common/http';
-// import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-// import { toSignal } from '@angular/core/rxjs-interop';
-// import { catchError, forkJoin, map, of } from 'rxjs';
-
-// /**
-//  * Contratto API previsto (Slim backend):
-//  *
-//  * GET /api/film/evidenza
-//  * → { titolo, descrizione, locandine: [{ id, url, alt? }] }
-//  *
-//  * GET /api/film?genere=Azione&limit=4
-//  * → FilmResponse[]
-//  */
-
-// const API_BASE_URL = 'http://localhost:8080/api';
-// const GENERI_HOME = ['Azione', 'Commedia', 'Drammatico'] as const;
-
-// interface LocandinaResponse {
-//   id: number;
-//   url: string;
-//   alt?: string;
-// }
-
-// interface FilmEvidenzaResponse {
-//   titolo: string;
-//   descrizione: string;
-//   locandine: LocandinaResponse[];
-// }
-
-// interface FilmResponse {
-//   id_film: number;
-//   titolo: string;
-//   genere: string;
-//   regista?: string;
-//   data_pubblicazione?: string;
-//   anno?: number;
-//   descrizione?: string;
-//   locandina_url?: string;
-// }
-
-// interface MovieCard {
-//   id: number;
-//   title: string;
-//   year: number;
-//   posterUrl?: string;
-// }
-
-// interface Category {
-//   name: string;
-//   movies: MovieCard[];
-// }
-
-// function extractYear(film: FilmResponse): number {
-//   if (film.anno) {
-//     return film.anno;
-//   }
-//   if (film.data_pubblicazione) {
-//     return Number(film.data_pubblicazione.slice(0, 4));
-//   }
-//   return 0;
-// }
-
-// function mapFilmToCard(film: FilmResponse): MovieCard {
-//   return {
-//     id: film.id_film,
-//     title: film.titolo,
-//     year: extractYear(film),
-//     posterUrl: film.locandina_url,
-//   };
-// }
-
-// @Component({
-//   selector: 'app-home',
-//   imports: [],
-//   providers: [provideHttpClient(withFetch())],
-//   templateUrl: './home.html',
-//   styleUrl: './home.css',
-//   changeDetection: ChangeDetectionStrategy.OnPush,
-// })
-// export class Home {
-//   private readonly http = inject(HttpClient);
-
-//   readonly featured = toSignal(
-//     this.http.get<FilmEvidenzaResponse>(`${API_BASE_URL}/film/evidenza`).pipe(
-//       catchError(() => of(null)),
-//     ),
-//     { initialValue: null as FilmEvidenzaResponse | null },
-//   );
-
-//   readonly categories = toSignal(
-//     forkJoin(
-//       GENERI_HOME.map((genere) =>
-//         this.http
-//           .get<FilmResponse[]>(`${API_BASE_URL}/film`, {
-//             params: { genere, limit: '4' },
-//           })
-//           .pipe(
-//             map((films) => ({
-//               name: genere,
-//               movies: films.map(mapFilmToCard),
-//             })),
-//             catchError(() => of({ name: genere, movies: [] as MovieCard[] })),
-//           ),
-//       ),
-//     ),
-//     { initialValue: undefined as Category[] | undefined },
-//   );
-// }
-
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Film } from '../../services/film';
@@ -121,18 +11,33 @@ import { Film } from '../../services/film';
   styleUrl: './home.css'
 })
 export class Home implements OnInit {
-  featured = signal<any>(null);
-  categories = signal<any[]>([]);
+  featured: any = null;
+  categories: any[] = [];
+  caricamento: boolean = true;
+  tuttiIFilm: any[] = [];
+  slideCorrente: number = 0;
 
-  constructor(private filmService: Film, private router: Router) {}
+  constructor(
+    private filmService: Film,
+    private router: Router,
+    public cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.filmService.getAll().subscribe({
       next: (film: any[]) => {
-        // Film in evidenza — primo della lista
+        this.tuttiIFilm = film;
+
+        if (film.length > 0) {
+           setTimeout(() => {
+            this.aggiornaCorrente();
+            this.cdr.detectChanges();
+          }, 0);
+        }
+
         if (film.length > 0) {
           const primo = film[0];
-          this.featured.set({
+          this.featured = {
             titolo: primo.titolo,
             descrizione: primo.descrizione ?? 'Nessuna descrizione disponibile',
             locandine: [
@@ -142,10 +47,9 @@ export class Home implements OnInit {
                 alt: primo.titolo
               }
             ]
-          });
+          };
         }
 
-        // Categorie — raggruppa i film per genere
         const generi: { [key: string]: any[] } = {};
         film.forEach(f => {
           const genere = f.genere ?? 'Altro';
@@ -158,17 +62,41 @@ export class Home implements OnInit {
           });
         });
 
-        this.categories.set(
-          Object.entries(generi).map(([name, movies]) => ({ name, movies }))
-        );
+        this.categories = Object.entries(generi).map(([name, movies]) => ({ name, movies }));
+        this.caricamento = false;
+        this.cdr.detectChanges();
       },
       error: () => {
-        console.error('Errore nel caricamento dei film');
+        this.caricamento = false;
+        this.cdr.detectChanges();
       }
     });
+    this.cdr.detectChanges();
   }
 
   goToFilm(id: number): void {
     this.router.navigate(['/film', id]);
+  }
+
+  prossima(): void {
+    this.slideCorrente = (this.slideCorrente + 1) % this.tuttiIFilm.length;
+    this.aggiornaCorrente();
+    this.cdr.detectChanges();
+  }
+
+  precedente(): void {
+      this.slideCorrente = (this.slideCorrente - 1 + this.tuttiIFilm.length) % this.tuttiIFilm.length;
+      this.aggiornaCorrente();
+      this.cdr.detectChanges();
+  }
+
+  aggiornaCorrente(): void {
+      const f = this.tuttiIFilm[this.slideCorrente];
+      this.featured = {
+          titolo: f.titolo,
+          descrizione: f.descrizione ?? 'Nessuna descrizione disponibile',
+          id: f.id_film,
+          url: f.locandina_url ? 'http://localhost:8080/' + f.locandina_url : null
+      };
   }
 }

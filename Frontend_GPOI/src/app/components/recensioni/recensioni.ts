@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Recensione } from '../../services/recensione';
 import { Auth } from '../../services/auth';
+import { ChangeDetectorRef } from '@angular/core';
+import { Account } from '../../services/account';
 
 @Component({
   selector: 'app-recensioni',
@@ -18,19 +20,28 @@ export class Recensioni implements OnInit {
 
   constructor(
     private recensioneService: Recensione,
+    private accountService: Account,
     public authService: Auth,
-    private router: Router
-  ) {}
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    this.recensioneService.getAll().subscribe({
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.accountService.getProfile().subscribe({
       next: (data) => {
-        this.recensioni = data;
+        this.recensioni = data.recensioni;
         this.caricamento = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errore = 'Errore nel caricamento delle recensioni';
         this.caricamento = false;
+        this.cdr.detectChanges();
       }
     });
   }

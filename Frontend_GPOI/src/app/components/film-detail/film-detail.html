@@ -1,0 +1,111 @@
+<div class="detail-container">
+
+  @if (caricamento) {
+  <p class="status">Caricamento...</p>
+  } @else if (errore && !film) {
+  <p class="status errore">{{ errore }}</p>
+  } @else if (film) {
+
+  <!-- HERO FILM -->
+  <section class="film-hero">
+    <div class="film-hero-inner">
+
+      <div class="film-poster">
+        @if (film.locandina_url) {
+        <img [src]="'http://localhost:8080/' + film.locandina_url" [alt]="'Locandina ' + film.titolo" />
+        } @else {
+        <div class="poster-placeholder">
+          <span>🎬</span>
+        </div>
+        }
+      </div>
+
+      <div class="film-info">
+        <button class="btn-back" (click)="goBack()">← Torna alla home</button>
+        <h1 class="film-titolo">{{ film.titolo }}</h1>
+        <div class="film-meta">
+          <span class="meta-tag">{{ film.genere }}</span>
+          <span class="meta-tag">{{ getAnno(film.data_pubblicazione) }}</span>
+          @if (film.regista) {
+          <span class="meta-tag">{{ film.regista }}</span>
+          }
+        </div>
+        @if (film.descrizione) {
+        <p class="film-descrizione">{{ film.descrizione }}</p>
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FORM RECENSIONE -->
+  @if (authService.isLoggedIn()) {
+  <section class="card">
+    <h2 class="section-title">Scrivi una recensione</h2>
+
+    @if (successMessage) {
+    <p class="success">{{ successMessage }}</p>
+    }
+    @if (errore) {
+    <p class="errore-msg">{{ errore }}</p>
+    }
+
+    <div class="stelle-input">
+      @for (i of [1,2,3,4,5]; track i) {
+        <span
+          class="stella-input"
+          [class.attiva]="i <= (hoverValutazione || nuovaValutazione)"
+          (click)="setValutazione(i)"
+          (mouseenter)="hoverValutazione = i"
+          (mouseleave)="hoverValutazione = 0"
+        >★</span>
+      }
+    </div>
+
+    <textarea [(ngModel)]="nuovaDescrizione" placeholder="Scrivi la tua recensione..."
+      class="recensione-textarea"></textarea>
+
+    <button type="button" class="btn-primary" [disabled]="invioInCorso" (click)="inviaRecensione()">
+      {{ invioInCorso ? 'Invio in corso...' : 'Invia Recensione' }}
+    </button>
+  </section>
+  }
+
+  <!-- LISTA RECENSIONI -->
+  <section class="card">
+    <h2 class="section-title">Recensioni ({{ recensioni.length }})</h2>
+
+    @if (recensioni.length === 0) {
+    <p class="status">Nessuna recensione ancora. Sii il primo!</p>
+    } @else {
+    <div class="recensioni-list">
+      @for (r of recensioni; track r.id_recensione) {
+      <div class="recensione-card">
+        <div class="recensione-header">
+          <div class="recensione-info">
+            <div class="utente-row">
+              <span class="utente">{{ r.nome_utente }}</span>
+              @if (r.nome_utente === authService.getNomeUtente()) {
+              <span class="badge-mia">La tua recensione</span>
+              }
+            </div>
+            <span class="stelle">{{ renderStelle(r.valutazione) }}</span>
+          </div>
+          <div class="recensione-meta">
+            <span class="data">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
+            @if (authService.isAdmin() || r.nome_utente === authService.getNomeUtente()) {
+              <button class="btn-elimina" (click)="eliminaRecensione(r.id_recensione)">Elimina</button>
+            }
+          </div>
+        </div>
+        @if (r.descrizione) {
+        <p class="recensione-testo">{{ r.descrizione }}</p>
+        }
+      </div>
+      }
+    </div>
+    }
+  </section>
+
+  }
+</div>

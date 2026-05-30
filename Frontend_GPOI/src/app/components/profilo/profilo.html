@@ -1,0 +1,123 @@
+<div class="profilo-container">
+
+  @if (caricamento) {
+    <p class="status">Caricamento...</p>
+
+  } @else if (errore && !account) {
+    <p class="status errore">{{ errore }}</p>
+
+  } @else if (account) {
+
+    @if (successMessage) {
+      <p class="success-banner">{{ successMessage }}</p>
+    }
+    @if (errore) {
+      <p class="errore-banner">{{ errore }}</p>
+    }
+
+    <!-- DATI UTENTE -->
+    <section class="card profilo-header">
+      <div class="avatar-wrapper">
+        @if (account.avatar_url) {
+          <img
+            class="avatar"
+            [src]="'http://localhost:8080/' + account.avatar_url"
+            [alt]="account.nome_utente"
+          />
+        } @else {
+          <div class="avatar-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+        }
+
+        <div class="avatar-upload">
+          <input type="file" id="avatarInput" accept=".jpg,.jpeg,.png,.webp" (change)="onAvatarChange($event)" />
+          <label for="avatarInput" class="btn-secondary">Cambia foto</label>
+          @if (avatarFile) {
+            <button
+              type="button"
+              class="btn-primary"
+              [disabled]="invioAvatarInCorso"
+              (click)="aggiornaAvatar()"
+            >
+              {{ invioAvatarInCorso ? 'Caricamento...' : 'Salva foto' }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="profilo-info">
+        <h1 class="nome-utente">{{ account.nome_utente }}</h1>
+        <p class="email">{{ account.email }}</p>
+        <span class="ruolo-badge" [class.admin]="account.ruolo === 'admin'">
+          {{ account.ruolo }}
+        </span>
+        @if (account.created_at) {
+          <p class="data-registrazione">Iscritto dal {{ account.created_at | date:'dd/MM/yyyy' }}</p>
+        }
+      </div>
+    </section>
+
+    <!-- CAMBIA PASSWORD -->
+    <section class="card">
+      <h2 class="section-title">Cambia Password</h2>
+
+      <div class="form-group">
+        <label>Nuova password</label>
+        <input
+          type="password"
+          [(ngModel)]="nuovaPassword"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Conferma password</label>
+        <input
+          type="password"
+          [(ngModel)]="confermaPassword"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="invioPasswordInCorso"
+        (click)="aggiornaPassword()"
+      >
+        {{ invioPasswordInCorso ? 'Aggiornamento...' : 'Aggiorna Password' }}
+      </button>
+    </section>
+
+    <!-- LE MIE RECENSIONI -->
+    <section class="card">
+      <h2 class="section-title">Le mie recensioni ({{ recensioni.length }})</h2>
+
+      @if (recensioni.length === 0) {
+        <p class="status">Non hai ancora scritto recensioni.</p>
+      } @else {
+        <div class="recensioni-list">
+          @for (r of recensioni; track r.id_recensione) {
+            <div class="recensione-card">
+              <div class="recensione-header">
+                <span class="film-titolo">{{ r.titolo_film }}</span>
+                <div class="recensione-meta">
+                  <span class="stelle">{{ renderStelle(r.valutazione) }}</span>
+                  <span class="data">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+              @if (r.descrizione) {
+                <p class="recensione-testo">{{ r.descrizione }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  }
+</div>
