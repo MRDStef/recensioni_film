@@ -43,6 +43,8 @@ $app->addBodyParsingMiddleware();
 // Middleware per la gestione degli errori
 $app->addErrorMiddleware(true, true, true);
 
+$app->post('/api/account/me/avatar', [$accountController, 'updateAvatar']);
+
 // CORS
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);

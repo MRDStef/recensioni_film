@@ -66,8 +66,9 @@ class AccountController
     }
 
     // update avatar
-    public function updateAvatar(Request $request, Response $response): Response
-    {
+    public function updateAvatar(Request $request, Response $response): Response {
+        error_log('Uploaded files: ' . print_r($request->getUploadedFiles(), true));
+        error_log('Parsed body: ' . print_r($request->getParsedBody(), true));
         $payload = JwtHelper::getFromRequest($request);
 
         if (!$payload) {
