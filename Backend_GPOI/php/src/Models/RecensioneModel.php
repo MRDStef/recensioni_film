@@ -22,6 +22,14 @@ class RecensioneModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getById(int $id): array|false {
+        $stmt = $this->db->prepare('
+            SELECT * FROM Recensione WHERE id_recensione = ?
+        ');
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getByFilm(int $id_film): array {
         $stmt = $this->db->prepare('
             SELECT r.*, a.nome_utente

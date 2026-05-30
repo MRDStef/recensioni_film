@@ -13,14 +13,12 @@ class FilmController {
         $this->filmModel = $filmModel;
     }
 
-    // GET /api/film
     public function getAll(Request $request, Response $response): Response {
         $film = $this->filmModel->getAll();
         $response->getBody()->write(json_encode($film));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // GET /api/film/{id}
     public function getById(Request $request, Response $response, array $args): Response {
         $film = $this->filmModel->getById((int)$args['id']);
 
@@ -33,7 +31,7 @@ class FilmController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // POST /api/film  (solo admin)
+    // inserimento film
     public function add(Request $request, Response $response): Response {
         $data          = $request->getParsedBody();
         $uploadedFiles = $request->getUploadedFiles();
@@ -60,7 +58,7 @@ class FilmController {
         return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
-    // PUT /api/film/{id}  (solo admin)
+    // aggiornamento film
     public function update(Request $request, Response $response, array $args): Response {
         $data = $request->getParsedBody();
 
@@ -80,7 +78,7 @@ class FilmController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // DELETE /api/film/{id}  (solo admin)
+    // eliminazione film
     public function delete(Request $request, Response $response, array $args): Response {
         $film = $this->filmModel->getById((int)$args['id']);
 

@@ -28,7 +28,7 @@ class FilmModel {
 
     public function add(string $titolo, string $genere, string $regista, string $data, ?string $locandina): int {
         $stmt = $this->db->prepare('
-            INSERT INTO Film (titolo, genere, regista, data_pubblicazione, locandina_path)
+            INSERT INTO Film (titolo, genere, regista, data_pubblicazione, locandina_url)
             VALUES (?, ?, ?, ?, ?)
         ');
         $stmt->execute([$titolo, $genere, $regista, $data, $locandina]);

@@ -23,7 +23,7 @@ class AuthController
 
         $nome_utente = trim($data['nome_utente'] ?? '');
         $email = trim($data['email'] ?? '');
-        $password = password_hash($data['password'], PASSWORD_BCRYPT);
+        $password = trim($data['password'], PASSWORD_BCRYPT);
 
         // Controllo campi
         if (!$nome_utente || !$email || !$password) {
@@ -60,7 +60,7 @@ class AuthController
         $account = $this->accountModel->getByEmail($email);
 
         // Controllo credenziali
-        if (!$account || !password_verify($password, $account['password'])) {
+        if (!$account || $account['password'] !== $password) {
             $response->getBody()->write(json_encode(['error' => 'Credenziali errate']));
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }
@@ -83,7 +83,6 @@ class AuthController
     // logout
     public function logout(Request $request, Response $response): Response
     {
-        // Con JWT il logout è gestito dal client che elimina il token
         $response->getBody()->write(json_encode(['message' => 'Logout effettuato']));
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
     }

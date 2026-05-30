@@ -19,8 +19,7 @@ class AccountController
         $this->recensioneModel = $recensioneModel;
     }
 
-    // GET /api/account/me
-// GET /api/account/me
+    // get account
     public function getProfile(Request $request, Response $response): Response
     {
         $payload = JwtHelper::getFromRequest($request);
@@ -40,7 +39,7 @@ class AccountController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // PUT /api/account/me
+    // update password
     public function updatePassword(Request $request, Response $response): Response
     {
         $payload = JwtHelper::getFromRequest($request);
@@ -66,7 +65,7 @@ class AccountController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // PUT /api/account/me/avatar
+    // update avatar
     public function updateAvatar(Request $request, Response $response): Response
     {
         $payload = JwtHelper::getFromRequest($request);

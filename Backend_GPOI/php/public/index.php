@@ -1,42 +1,93 @@
 <?php
+
 use Slim\Factory\AppFactory;
+use Slim\Routing\RouteCollectorProxy;
+use App\Controllers\AuthController;
+use App\Controllers\FilmController;
+use App\Controllers\RecensioneController;
+use App\Controllers\AccountController;
+use App\Models\AccountModel;
+use App\Models\FilmModel;
+use App\Models\RecensioneModel;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+require __DIR__ . '/../vendor/autoload.php';
 
-require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/controllers/AlunniController.php';
+// Carica variabili d'ambiente
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+// Connessione al database
+$db = new PDO(
+    'mysql:host=' . $_ENV['DB_HOST'] . ';dbname=' . $_ENV['DB_NAME'] . ';charset=utf8',
+    $_ENV['DB_USER'],
+    $_ENV['DB_PASS']
+);
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// Model
+$accountModel    = new AccountModel($db);
+$filmModel       = new FilmModel($db);
+$recensioneModel = new RecensioneModel($db);
+
+// Controller
+$authController       = new AuthController($accountModel);
+$filmController       = new FilmController($filmModel);
+$recensioneController = new RecensioneController($recensioneModel);
+$accountController    = new AccountController($accountModel, $recensioneModel);
 
 $app = AppFactory::create();
 
-$app->get('/test', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write("Test page");
+// Middleware per il parsing del body JSON
+$app->addBodyParsingMiddleware();
+
+// Middleware per la gestione degli errori
+$app->addErrorMiddleware(true, true, true);
+
+// CORS
+$app->add(function ($request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://localhost:4200')
+        ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
+
+// Gestione preflight OPTIONS (richiesta CORS preliminare del browser)
+$app->options('/{routes:.+}', function ($request, $response) {
     return $response;
 });
 
-// Auth
-$app->post('/api/auth/register', [AuthController::class, 'register']);
-$app->post('/api/auth/login',    [AuthController::class, 'login']);
-$app->post('/api/auth/logout',   [AuthController::class, 'logout']);
+// Rotte Auth
+$app->group('/api/auth', function (RouteCollectorProxy $group) use ($authController) {
+    $group->post('/register', [$authController, 'register']);
+    $group->post('/login',    [$authController, 'login']);
+    $group->post('/logout',   [$authController, 'logout']);
+});
 
-// Film
-$app->get('/api/film',            [FilmController::class, 'getAll']);
-$app->get('/api/film/{id}',       [FilmController::class, 'getById']);
-$app->post('/api/film',           [FilmController::class, 'add']);      // admin
-$app->put('/api/film/{id}',       [FilmController::class, 'update']);   // admin
-$app->delete('/api/film/{id}',    [FilmController::class, 'delete']);   // admin
+// Rotte Film
+$app->group('/api/film', function (RouteCollectorProxy $group) use ($filmController, $recensioneController) {
+    $group->get('',        [$filmController, 'getAll']);
+    $group->get('/{id}',   [$filmController, 'getById']);
+    $group->post('',       [$filmController, 'add']);
+    $group->put('/{id}',   [$filmController, 'update']);
+    $group->delete('/{id}',[$filmController, 'delete']);
 
-// Recensioni
-$app->get('/api/recensioni',              [RecensioneController::class, 'getAll']);
-$app->get('/api/film/{id}/recensioni',    [RecensioneController::class, 'getByFilm']);
-$app->post('/api/film/{id}/recensioni',   [RecensioneController::class, 'add']);
-$app->delete('/api/recensioni/{id}',      [RecensioneController::class, 'delete']); // admin
+    // Recensioni per film
+    $group->get('/{id}/recensioni',  [$recensioneController, 'getByFilm']);
+    $group->post('/{id}/recensioni', [$recensioneController, 'add']);
+});
 
-// Account
-$app->get('/api/account/me',             [AccountController::class, 'getProfile']);
-$app->put('/api/account/me',             [AccountController::class, 'updatePassword']);
-$app->put('/api/account/me/avatar',      [AccountController::class, 'updateAvatar']);
+// Rotte Recensioni
+$app->group('/api/recensioni', function (RouteCollectorProxy $group) use ($recensioneController) {
+    $group->get('',        [$recensioneController, 'getAll']);
+    $group->delete('/{id}',[$recensioneController, 'delete']);
+});
 
-$app->get('/alunni', "AlunniController:index");
+// Rotte Account
+$app->group('/api/account', function (RouteCollectorProxy $group) use ($accountController) {
+    $group->get('/me',          [$accountController, 'getProfile']);
+    $group->put('/me',          [$accountController, 'updatePassword']);
+    $group->put('/me/avatar',   [$accountController, 'updateAvatar']);
+});
 
 $app->run();

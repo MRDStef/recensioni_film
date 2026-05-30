@@ -36,12 +36,12 @@ class AccountModel {
         return (bool)$stmt->fetch();
     }
 
-    public function register(string $nome_utente, string $email, string $password): int {
+    public function register(string $nome_utente, string $email, string $password_hash): int {
         $stmt = $this->db->prepare('
             INSERT INTO Account (nome_utente, email, password, ruolo)
             VALUES (?, ?, ?, "utente")
         ');
-        $stmt->execute([$nome_utente, $email, $password]);
+        $stmt->execute([$nome_utente, $email, $password_hash]);
         return (int)$this->db->lastInsertId();
     }
 
