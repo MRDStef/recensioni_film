@@ -43,7 +43,7 @@ export class Home implements OnInit {
             locandine: [
               {
                 id: 1,
-                url: primo.locandina_url ? 'http://localhost:8080/' + primo.locandina_url : null,
+                url: primo.locandina_url ? '/' + primo.locandina_url : null,
                 alt: primo.titolo
               }
             ]
@@ -58,7 +58,7 @@ export class Home implements OnInit {
             id: f.id_film,
             title: f.titolo,
             year: f.data_pubblicazione ? new Date(f.data_pubblicazione).getFullYear() : '',
-            posterUrl: f.locandina_url ? 'http://localhost:8080/' + f.locandina_url : null
+            posterUrl: f.locandina_url ? '/' + f.locandina_url : null
           });
         });
 
@@ -96,7 +96,7 @@ export class Home implements OnInit {
           titolo: f.titolo,
           descrizione: f.descrizione ?? 'Nessuna descrizione disponibile',
           id: f.id_film,
-          url: f.locandina_url ? 'http://localhost:8080/' + f.locandina_url : null
+          url: f.locandina_url ? '/' + f.locandina_url : null
       };
   }
 }

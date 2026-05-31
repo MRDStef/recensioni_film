@@ -25,7 +25,10 @@ services:
       - MARIADB_DATABASE=scuola
     volumes:
       - "./mysql:/var/lib/mysql"
-      - "./build/init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./build/init.sql:/docker-entrypoint-initdb.d/01-init.sql"
+      - "./build/imports.sql:/docker-entrypoint-initdb.d/02-imports.sql"
+      - "./build/more-seed.sql:/docker-entrypoint-initdb.d/03-more-seed.sql"
+      - "./build/films-catalog.sql:/docker-entrypoint-initdb.d/04-films-catalog.sql"
 
   my_phpMyAdmin:
     image: phpmyadmin

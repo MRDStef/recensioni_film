@@ -23,7 +23,7 @@ class AuthController
 
         $nome_utente = trim($data['nome_utente'] ?? '');
         $email = trim($data['email'] ?? '');
-        $password = trim($data['password'], PASSWORD_BCRYPT);
+        $password = $data['password'] ?? '';
 
         // Controllo campi
         if (!$nome_utente || !$email || !$password) {
@@ -37,7 +37,11 @@ class AuthController
             return $response->withStatus(409)->withHeader('Content-Type', 'application/json');
         }
 
-        $this->accountModel->register($nome_utente, $email, $password);
+        $this->accountModel->register(
+            $nome_utente,
+            $email,
+            password_hash($password, PASSWORD_BCRYPT)
+        );
 
         $response->getBody()->write(json_encode(['message' => 'Registrazione avvenuta']));
         return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
@@ -60,7 +64,10 @@ class AuthController
         $account = $this->accountModel->getByEmail($email);
 
         // Controllo credenziali
-        if (!$account || $account['password'] !== $password) {
+        if (
+            !$account
+            || !password_verify($password, $account['password'])
+        ) {
             $response->getBody()->write(json_encode(['error' => 'Credenziali errate']));
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }
