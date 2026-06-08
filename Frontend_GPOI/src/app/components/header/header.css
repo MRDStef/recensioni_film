@@ -103,14 +103,37 @@
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(255, 217, 102, 0.3);
-  transition: all 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
   cursor: pointer;
 }
 
 .account-icon:hover {
   border-color: #ffd966;
-  transform: scale(1.05);
+  transform: scale(1.12) rotate(-3deg);
   background: linear-gradient(135deg, #3a3e5a, #2a2e45);
+  box-shadow: 0 12px 30px rgba(255, 217, 102, 0.18);
+}
+
+.account-icon:focus-visible,
+.dropdown-trigger:focus-visible,
+.btn-login:focus-visible {
+  outline: 2px solid rgba(255, 217, 102, 0.5);
+  outline-offset: 3px;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: rgba(30, 34, 50, 0.6);
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  color: #e2e8ff;
+  font-weight: 500;
+  animation: popIn 0.45s ease both;
 }
 
 .account-icon svg {

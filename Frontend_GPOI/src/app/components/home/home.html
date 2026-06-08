@@ -20,7 +20,9 @@
 
         <div class="carousel-viewport" (click)="goToFilm(featured.id)" style="cursor:pointer">
           <div class="carousel-track">
-            <div class="carousel-slide carousel-slide--active">
+            <div class="carousel-slide carousel-slide--active"
+              [class.fading-out]="slideTransitionState === 'fading-out'"
+              [class.fading-in]="slideTransitionState === 'fading-in'">
               @if (featured.url) {
               <img class="carousel-slide-image" [src]="featured.url" [alt]="featured.titolo" />
               } @else {

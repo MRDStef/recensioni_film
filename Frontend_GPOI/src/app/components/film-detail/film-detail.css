@@ -2,7 +2,8 @@
   min-height: 100vh;
   padding: 2rem;
   box-sizing: border-box;
-  padding-top: 80px
+  padding-top: 80px;
+  animation: fadeInUp 0.65s ease both;
 }
 
 /* HERO */

@@ -2,6 +2,7 @@
   min-height: 100vh;
   padding: 80px 2rem 3rem;
   box-sizing: border-box;
+  animation: fadeInUp 0.65s ease both;
 }
 
 /* CARD */

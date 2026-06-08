@@ -18,7 +18,8 @@
   height: 100%;
   display: flex;
   backdrop-filter: blur(4px);
-  padding-top: 80px
+  padding-top: 80px;
+  animation: fadeInUp 0.65s ease both;
 }
 
 .filter {
@@ -47,6 +48,7 @@ form {
   transition: transform 0.25s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 2;
+  animation: popIn 0.5s ease both;
 }
 
 /* INPUT GROUPS */

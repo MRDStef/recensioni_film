@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Film } from '../../services/film';
@@ -10,12 +10,14 @@ import { Film } from '../../services/film';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   featured: any = null;
   categories: any[] = [];
   caricamento: boolean = true;
   tuttiIFilm: any[] = [];
   slideCorrente: number = 0;
+  slideTransitionState: 'idle' | 'fading-out' | 'fading-in' = 'idle';
+  private autoplayTimer?: number;
 
   constructor(
     private filmService: Film,
@@ -64,6 +66,7 @@ export class Home implements OnInit {
 
         this.categories = Object.entries(generi).map(([name, movies]) => ({ name, movies }));
         this.caricamento = false;
+        this.startAutoplay();
         this.cdr.detectChanges();
       },
       error: () => {
@@ -74,20 +77,65 @@ export class Home implements OnInit {
     this.cdr.detectChanges();
   }
 
+  ngOnDestroy(): void {
+    this.stopAutoplay();
+  }
+
   goToFilm(id: number): void {
     this.router.navigate(['/film', id]);
   }
 
   prossima(): void {
-    this.slideCorrente = (this.slideCorrente + 1) % this.tuttiIFilm.length;
-    this.aggiornaCorrente();
-    this.cdr.detectChanges();
+    this.changeSlide((this.slideCorrente + 1) % this.tuttiIFilm.length);
   }
 
   precedente(): void {
-      this.slideCorrente = (this.slideCorrente - 1 + this.tuttiIFilm.length) % this.tuttiIFilm.length;
+    this.changeSlide((this.slideCorrente - 1 + this.tuttiIFilm.length) % this.tuttiIFilm.length);
+  }
+
+  private changeSlide(index: number): void {
+    if (index === this.slideCorrente || this.tuttiIFilm.length === 0) {
+      return;
+    }
+
+    this.stopAutoplay();
+    this.slideTransitionState = 'fading-out';
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.slideCorrente = index;
       this.aggiornaCorrente();
+      this.slideTransitionState = 'fading-in';
       this.cdr.detectChanges();
+
+      setTimeout(() => {
+        this.slideTransitionState = 'idle';
+        this.cdr.detectChanges();
+        this.startAutoplay();
+      }, 300);
+    }, 300);
+  }
+
+  private avantiAutomatico(): void {
+    if (this.tuttiIFilm.length === 0) {
+      return;
+    }
+    this.changeSlide((this.slideCorrente + 1) % this.tuttiIFilm.length);
+  }
+
+  private startAutoplay(): void {
+    this.stopAutoplay();
+    if (this.tuttiIFilm.length <= 1) {
+      return;
+    }
+    this.autoplayTimer = window.setInterval(() => this.avantiAutomatico(), 6000);
+  }
+
+  private stopAutoplay(): void {
+    if (this.autoplayTimer !== undefined) {
+      window.clearInterval(this.autoplayTimer);
+      this.autoplayTimer = undefined;
+    }
   }
 
   aggiornaCorrente(): void {
