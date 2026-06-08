@@ -30,6 +30,13 @@ class RecensioneController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
+    public function getAverage(Request $request, Response $response, array $args): Response
+    {
+        $media = $this->recensioneModel->getAvgPerFilm((int) $args['id']);
+        $response->getBody()->write(json_encode(['media_valutazione' => $media]));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
     // inserimento recensione
     public function add(Request $request, Response $response, array $args): Response
     {

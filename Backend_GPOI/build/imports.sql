@@ -1,5 +1,5 @@
 INSERT INTO `Account` (`id_account`, `nome_utente`, `email`, `ruolo`, `password`, `avatar_url`, `created_at`) VALUES
-(4, 'admin', 'admin@test.it', 'admin', '$2y$10$ZJeB3lOol6VvW6E6U9M5..JI6VXc6O/bz0Jsk83eXwUAMOjuSOShy', NULL, '2026-05-30 15:06:00');
+(4, 'admin', 'admin@test.it', 'admin', '$2y$10$ZJeB3lOol6VvW6E6U9M5..JI6VXc6O/bz0Jsk83eXwUAMOjuSOShy', NULL, '2026-05-30 15:06:00'),
 -- Utenti aggiuntivi (password: password123)
 (5, 'mario_rossi', 'mario@test.it', 'utente', '$2y$10$KuuX.IYaOkcsoz//XX8dDOhFLSbfVQhBdr/cpsHD5YKL3xWBBa45K', '2026-05-28 10:00:00'),
 (6, 'giulia_bianchi', 'giulia@test.it', 'utente', '$2y$10$KuuX.IYaOkcsoz//XX8dDOhFLSbfVQhBdr/cpsHD5YKL3xWBBa45K', '2026-05-28 11:30:00'),

@@ -23,6 +23,14 @@
       <div class="film-info">
         <button class="btn-back" (click)="goBack()">← Torna alla home</button>
         <h1 class="film-titolo">{{ film.titolo }}</h1>
+        <div class="film-rating">
+          @if (film.numero_recensioni > 0) {
+            <span class="media-stelle">★{{ film.media_valutazione}}</span>
+            <span class="numero-recensioni">({{ film.numero_recensioni }} recensioni)</span>
+          } @else {
+            <span class="numero-recensioni">★ N/A</span>
+          }
+        </div>
         <div class="film-meta">
           <span class="meta-tag">{{ film.genere }}</span>
           <span class="meta-tag">{{ getAnno(film.data_pubblicazione) }}</span>

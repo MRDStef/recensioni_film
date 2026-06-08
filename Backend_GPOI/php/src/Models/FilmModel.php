@@ -20,7 +20,13 @@ class FilmModel {
 
     public function getById(int $id): array|false {
         $stmt = $this->db->prepare('
-            SELECT * FROM Film WHERE id_film = ?
+            SELECT f.id_film, f.titolo, f.genere, f.regista, f.data_pubblicazione, f.locandina_url, f.descrizione, 
+                ROUND(AVG(r.valutazione), 1) AS media_valutazione,
+                COUNT(r.id_recensione) AS numero_recensioni
+            FROM Film f
+            LEFT JOIN Recensione r ON f.id_film = r.id_film
+            WHERE f.id_film = ?
+            GROUP BY f.id_film, f.titolo, f.genere, f.regista, f.data_pubblicazione, f.locandina_url, f.descrizione
         ');
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
